@@ -1,0 +1,9 @@
+version: "2.28.1"
+
+services:
+  server:
+    build: ./
+    command: java build/classes/java/main/org/roadmap/filedrive/FileDriveApplication.class
+    ports: 8080:8080
+
+
