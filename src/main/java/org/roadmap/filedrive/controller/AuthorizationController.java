@@ -1,15 +1,24 @@
 package org.roadmap.filedrive.controller;
 
+import org.roadmap.filedrive.dto.AppUserDTO;
+import org.roadmap.filedrive.service.AppUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class AuthorizationController {
 
+    @Autowired
+    private AppUserService appUserService;
+
     @GetMapping("/sign-up")
-    public String signUp() {
+    public String signUp(Model model) {
+        AppUserDTO userDTO = new AppUserDTO();
+        model.addAttribute(userDTO);
         return "registration";
     }
 
@@ -24,7 +33,7 @@ public class AuthorizationController {
     }
 
     @PostMapping("/sign-up")
-    public void signUp(String email, String password) {
+    public void signUp() {
         //TODO
     }
 
