@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -13,10 +12,21 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(expressionInterceptUrlRegistry ->
-                expressionInterceptUrlRegistry.anyRequest().
-                permitAll()).csrf(AbstractHttpConfigurer::disable);
-        return http.build();
+        return http.authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/sign-in").permitAll()
+                        .requestMatchers("/sign-up").permitAll()
+                        .requestMatchers("/log-out").permitAll()
+                        .requestMatchers("/static/**").permitAll()
+                        .requestMatchers("/css/**").permitAll()
+                        .anyRequest().authenticated()
+                ).formLogin(form -> form
+                        .loginPage("/sign-in")
+                        .successForwardUrl("/")
+                ).logout(logout -> logout
+                        .logoutUrl("/log-out")
+                        .logoutSuccessUrl("/"))
+                .build();
     }
 
 }
