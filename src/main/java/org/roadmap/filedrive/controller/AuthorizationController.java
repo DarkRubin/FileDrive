@@ -1,5 +1,6 @@
 package org.roadmap.filedrive.controller;
 
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,11 @@ public class AuthorizationController {
         return "authorization";
     }
 
+    @GetMapping("/log-out")
+    public String logOut() {
+        return "logout";
+    }
+
     @PostMapping("/sign-up")
     public void signUp(String email, String password) {
         //TODO
@@ -24,6 +30,11 @@ public class AuthorizationController {
 
     @PostMapping("/sign-in")
     public void signIn(String email, String password) {
+        //TODO
+    }
+
+    @PostMapping("/log-out")
+    public void logOut(User user) {
         //TODO
     }
 }
