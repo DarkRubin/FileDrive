@@ -12,16 +12,21 @@
 
 	<h2 class="text-center p-4">Authorization</h2>
 
-	<form th:action="@{/sign-in}" method="post">
+	<form th:object="${userForm}" th:action="@{/sign-in}" method="post">
+		<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
 		<h5 class="form-label">Enter email:</h5>
 		<div class="form-floating">
-			<input class="form-control" id="email" placeholder="" name="email" type="email" required>
+			<input th:field="${userForm.email}" class="form-control" id="email" placeholder="" name="email" type="email" required>
 			<label class="text-secondary" for="email">yourNick2008@mail.com</label>
+			<h6 th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</h6>
 		</div>
 		<h5 class="form-label">Enter password:</h5>
 		<div class="form-floating">
-			<input class="form-control" id="pass" placeholder="" name="password" type="password" required>
+			<input th:field="${userForm.password}" class="form-control" id="pass" placeholder="" name="password" type="password" required>
 			<label class="text-secondary" for="pass">password-example</label>
+			<h6 th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Error</h6>
+
 		</div>
 		<h5 class="p-3">You are not registered? <a href="/sign-up">sign-up</a> </h5>
 		<input style="width: 330px" class="btn btn-lg btn-danger py-2" type="submit" value="Submit">
