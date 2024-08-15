@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,8 +31,9 @@ public class AuthorizationController {
     }
 
     @GetMapping("/sign-in")
-    public String signIn() {
-        return "authorization";
+    public String signIn(Model model) {
+        model.addAttribute("userForm", new AppUserDTO());
+        return "sign-in";
     }
 
     @GetMapping("/log-out")
@@ -89,8 +91,19 @@ public class AuthorizationController {
     }
 
     @PostMapping("/sign-in")
-    public void signIn(String email, String password) {
-        //TODO
+    public String signIn(Model model, @ModelAttribute("userForm") AppUserDTO userForm, BindingResult result) {
+
+
+        AppUser appUser = repo.findByEmail(userForm.getEmail());
+        if (appUser == null) {
+            result.addError(new FieldError("userForm", "email",
+                    "Incorrect email or password"));
+        }
+        if (result.hasErrors()) {
+            return "sign-in";
+        }
+
+        return "redirect:/main";
     }
 
     @PostMapping("/log-out")
