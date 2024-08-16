@@ -1,5 +1,6 @@
 package org.roadmap.filedrive.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.roadmap.filedrive.dto.AppUserDTO;
 import org.roadmap.filedrive.maper.AppUserMapper;
@@ -43,7 +44,8 @@ public class AuthorizationController {
     }
 
     @PostMapping("/sign-up")
-    public String signUp(@ModelAttribute("userForm") @Valid AppUserDTO userForm, BindingResult result) {
+    public String signUp(@ModelAttribute("userForm") @Valid AppUserDTO userForm,
+                         BindingResult result, HttpServletRequest request) {
         AppUser appUser = repo.findByEmail(userForm.getEmail());
         if (appUser != null) {
             result.addError(new FieldError("userForm", "email",
@@ -80,15 +82,19 @@ public class AuthorizationController {
 
         try {
             var bCryptEncoder = new BCryptPasswordEncoder();
-            String encodedPassword = bCryptEncoder.encode(userForm.getPassword());
+
+            String password = userForm.getPassword();
+            String encodedPassword = bCryptEncoder.encode(password);
             userForm.setPassword(encodedPassword);
             AppUser userToSave = mapper.fromDTO(userForm);
             repo.save(userToSave);
+            request.login(userForm.getEmail(), password);
         } catch (Exception e) {
             result.addError(new FieldError("userForm", "email",
                     "Unknown error occurred"));
             return "sign-up";
         }
+
         return "redirect:/main";
     }
 
