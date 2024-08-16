@@ -26,7 +26,8 @@ public class AuthorizationController {
     private final AppUserMapper mapper = new AppUserMapperImpl();
 
     @GetMapping("/sign-up")
-    public String signUp(AppUserDTO appUserDTO) {
+    public String signUp(Model model) {
+        model.addAttribute("userForm", new AppUserDTO());
         return "sign-up";
     }
 
@@ -42,16 +43,16 @@ public class AuthorizationController {
     }
 
     @PostMapping("/sign-up")
-    public String signUp(@ModelAttribute @Valid AppUserDTO appUserDTO, BindingResult result) {
-        AppUser appUser = repo.findByEmail(appUserDTO.getEmail());
+    public String signUp(@ModelAttribute("userForm") @Valid AppUserDTO userForm, BindingResult result) {
+        AppUser appUser = repo.findByEmail(userForm.getEmail());
         if (appUser != null) {
-            result.addError(new FieldError("appUserDTO", "email",
+            result.addError(new FieldError("userForm", "email",
                     "Email is already used"));
         }
         int lettersCount = 0;
         int numbersCount = 0;
         int specialSymbolsCount = 0;
-        for (char c : appUserDTO.getPassword().toCharArray()) {
+        for (char c : userForm.getPassword().toCharArray()) {
             if (Character.isLetter(c)) {
                 lettersCount++;
             } else if (Character.isDigit(c)) {
@@ -61,15 +62,15 @@ public class AuthorizationController {
             }
         }
         if (lettersCount == 0) {
-            result.addError(new FieldError("appUserDTO", "password",
+            result.addError(new FieldError("userForm", "password",
                     "Password must contain at least one letter"));
         }
         if (numbersCount == 0) {
-            result.addError(new FieldError("appUserDTO", "password",
+            result.addError(new FieldError("userForm", "password",
                     "Password must contain at least one number"));
         }
         if (specialSymbolsCount == 0) {
-            result.addError(new FieldError("appUserDTO", "password",
+            result.addError(new FieldError("userForm", "password",
                     "Password must contain at least one special symbol"));
         }
 
@@ -79,19 +80,20 @@ public class AuthorizationController {
 
         try {
             var bCryptEncoder = new BCryptPasswordEncoder();
-            String encodedPassword = bCryptEncoder.encode(appUserDTO.getPassword());
-            appUserDTO.setPassword(encodedPassword);
-            AppUser userToSave = mapper.fromDTO(appUserDTO);
+            String encodedPassword = bCryptEncoder.encode(userForm.getPassword());
+            userForm.setPassword(encodedPassword);
+            AppUser userToSave = mapper.fromDTO(userForm);
             repo.save(userToSave);
         } catch (Exception e) {
-            result.addError(new FieldError("appUserDTO", "email",
+            result.addError(new FieldError("userForm", "email",
                     "Unknown error occurred"));
+            return "sign-up";
         }
         return "redirect:/main";
     }
 
     @PostMapping("/sign-in")
-    public String signIn(Model model, @ModelAttribute("userForm") AppUserDTO userForm, BindingResult result) {
+    public String signIn(@ModelAttribute("userForm") AppUserDTO userForm, BindingResult result) {
 
 
         AppUser appUser = repo.findByEmail(userForm.getEmail());
