@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -15,20 +16,24 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/sign-in").permitAll()
-                        .requestMatchers("/sign-up").permitAll()
-                        .requestMatchers("/log-out").permitAll()
-                        .requestMatchers("/static/**").permitAll()
-                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers(
+                                new AntPathRequestMatcher("/"),
+                                new AntPathRequestMatcher("/sign-in"),
+                                new AntPathRequestMatcher("/sign-up"),
+                                new AntPathRequestMatcher("/log-out"),
+                                new AntPathRequestMatcher("/static/**"),
+                                new AntPathRequestMatcher("/css/**")
+                        ).permitAll()
+                        .requestMatchers("/search")
+                        .hasRole("USER")
                         .anyRequest().authenticated()
                 ).formLogin(form -> form
                         .loginPage("/sign-in")
-                        .successForwardUrl("/")
+                        .usernameParameter("email")
                 ).logout(logout -> logout
                         .logoutUrl("/log-out")
-                        .logoutSuccessUrl("/"))
-                .build();
+                        .logoutSuccessUrl("/")
+                ).build();
     }
 
     @Bean
