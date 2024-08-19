@@ -11,10 +11,16 @@ public class MainPageController {
     @Value("${spring.application.name}")
     String appName;
 
-    @GetMapping("/")
+    @GetMapping({"/", "/main"})
     public String mainPage(Model model) {
         model.addAttribute("appName", appName);
         return "main";
+    }
+
+    @GetMapping("/search")
+    public String searchPage(Model model) {
+        model.addAttribute("appName", appName);
+        return "search";
     }
 
 }

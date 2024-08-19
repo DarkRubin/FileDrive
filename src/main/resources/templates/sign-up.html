@@ -19,17 +19,17 @@
 		<div class="form-floating">
 			<input th:field="${userForm.email}" class="form-control" id="email" placeholder="" name="email" type="email" required>
 			<label class="text-secondary" for="email">yourNick2008@mail.com</label>
-			<h6 th:if="${#fields.hasErrors('email')}" th:errors="*{email}"> Name Error</h6>
+			<h6 class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"> Name Error</h6>
 		</div>
 
 		<h5 class="form-label">Enter password:</h5>
 		<div class="form-floating">
 			<input class="form-control" th:field="${userForm.password}" id="pass" placeholder="" name="password" type="password" required>
 			<label class="text-secondary" for="pass">password-example</label>
-			<h6 th:if="${#fields.hasErrors('password')}" th:errors="*{password}"> Name Error</h6>
+			<h6 class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"> Name Error</h6>
 		</div>
 
-		<h5 class="p-3">You already registered? <a href="/sign-in">sign-in</a> </h5>
+		<h5 class="p-3">You already registered? <a href="/login">sign-in</a> </h5>
 		<input style="width: 330px" class="btn btn-lg btn-danger py-2" type="submit" value="Submit">
 
 	</form>

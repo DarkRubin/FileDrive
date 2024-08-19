@@ -18,7 +18,7 @@ public class SecurityConfig {
         return http.authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 new AntPathRequestMatcher("/"),
-                                new AntPathRequestMatcher("/sign-in"),
+                                new AntPathRequestMatcher("/sign-in/**"),
                                 new AntPathRequestMatcher("/sign-up"),
                                 new AntPathRequestMatcher("/log-out"),
                                 new AntPathRequestMatcher("/static/**"),
@@ -29,8 +29,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 ).formLogin(form -> form
                         .loginPage("/sign-in")
+                        .loginProcessingUrl("/sign-in/auth")
                         .usernameParameter("email")
-                ).logout(logout -> logout
+        ).logout(logout -> logout
                         .logoutUrl("/log-out")
                         .logoutSuccessUrl("/")
                 ).build();

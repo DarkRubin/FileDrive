@@ -51,10 +51,40 @@ public class AuthorizationController {
             result.addError(new FieldError("userForm", "email",
                     "Email is already used"));
         }
+        String password = userForm.getPassword();
+        validate(password, result);
+
+        if (result.hasErrors()) {
+            return "sign-up";
+        }
+
+        try {
+            var bCryptEncoder = new BCryptPasswordEncoder();
+            String encodedPassword = bCryptEncoder.encode(password);
+            userForm.setPassword(encodedPassword);
+            AppUser userToSave = mapper.fromDTO(userForm);
+            repo.save(userToSave);
+            request.login(userForm.getEmail(), password);
+        } catch (Exception e) {
+            result.addError(new FieldError("userForm", "email",
+                    "Unknown error occurred"));
+            return "sign-up";
+        }
+
+        return "redirect:/main";
+    }
+
+    private void validate(String password, BindingResult result) {
+        if (password.length() < 8) {
+            result.addError(new FieldError("userForm", "password",
+                    "Minimum password length 8 characters"));
+            return;
+        }
+
         int lettersCount = 0;
         int numbersCount = 0;
         int specialSymbolsCount = 0;
-        for (char c : userForm.getPassword().toCharArray()) {
+        for (char c : password.toCharArray()) {
             if (Character.isLetter(c)) {
                 lettersCount++;
             } else if (Character.isDigit(c)) {
@@ -75,33 +105,10 @@ public class AuthorizationController {
             result.addError(new FieldError("userForm", "password",
                     "Password must contain at least one special symbol"));
         }
-
-        if (result.hasErrors()) {
-            return "sign-up";
-        }
-
-        try {
-            var bCryptEncoder = new BCryptPasswordEncoder();
-
-            String password = userForm.getPassword();
-            String encodedPassword = bCryptEncoder.encode(password);
-            userForm.setPassword(encodedPassword);
-            AppUser userToSave = mapper.fromDTO(userForm);
-            repo.save(userToSave);
-            request.login(userForm.getEmail(), password);
-        } catch (Exception e) {
-            result.addError(new FieldError("userForm", "email",
-                    "Unknown error occurred"));
-            return "sign-up";
-        }
-
-        return "redirect:/main";
     }
 
-    @PostMapping("/sign-in")
-    public String signIn(@ModelAttribute("userForm") AppUserDTO userForm, BindingResult result) {
-
-
+    @PostMapping("/sign-in/auth")
+    public String signIn(@ModelAttribute("userForm") @Valid AppUserDTO userForm, BindingResult result) {
         AppUser appUser = repo.findByEmail(userForm.getEmail());
         if (appUser == null) {
             result.addError(new FieldError("userForm", "email",
