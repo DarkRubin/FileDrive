@@ -107,20 +107,6 @@ public class AuthorizationController {
         }
     }
 
-    @PostMapping("/sign-in/auth")
-    public String signIn(@ModelAttribute("userForm") @Valid AppUserDTO userForm, BindingResult result) {
-        AppUser appUser = repo.findByEmail(userForm.getEmail());
-        if (appUser == null) {
-            result.addError(new FieldError("userForm", "email",
-                    "Incorrect email or password"));
-        }
-        if (result.hasErrors()) {
-            return "sign-in";
-        }
-
-        return "redirect:/main";
-    }
-
     @PostMapping("/log-out")
     public void logOut(User user) {
         //TODO
