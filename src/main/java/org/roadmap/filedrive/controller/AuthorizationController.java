@@ -32,13 +32,14 @@ public class AuthorizationController {
         return "sign-up";
     }
 
+
     @GetMapping("/sign-in")
     public String signIn(Model model) {
         model.addAttribute("userForm", new AppUserDTO());
         return "sign-in";
     }
 
-    @GetMapping("/log-out")
+    @GetMapping("/logout")
     public String logOut() {
         return "logout";
     }
@@ -105,10 +106,5 @@ public class AuthorizationController {
             result.addError(new FieldError("userForm", "password",
                     "Password must contain at least one special symbol"));
         }
-    }
-
-    @PostMapping("/log-out")
-    public void logOut(User user) {
-        //TODO
     }
 }

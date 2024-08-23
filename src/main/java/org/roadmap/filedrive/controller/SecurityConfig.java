@@ -16,14 +16,14 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/", "/sign-in", "/sign-up", "/log-out", "/static/**", "/css/**"
+                                "/", "/sign-in", "/sign-up", "/logout", "/static/**", "/css/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 ).formLogin(form -> form
                         .loginPage("/sign-in")
                         .usernameParameter("email")
                 ).logout(logout -> logout
-                        .logoutUrl("/log-out")
+                        .logoutUrl("/logout")
                         .logoutSuccessUrl("/")
                 ).build();
     }
