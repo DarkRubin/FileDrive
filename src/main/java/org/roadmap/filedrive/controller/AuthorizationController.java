@@ -2,11 +2,11 @@ package org.roadmap.filedrive.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.roadmap.filedrive.dto.AppUserDTO;
-import org.roadmap.filedrive.maper.AppUserMapper;
-import org.roadmap.filedrive.maper.AppUserMapperImpl;
-import org.roadmap.filedrive.model.AppUser;
-import org.roadmap.filedrive.repository.AppUserRepository;
+import org.roadmap.filedrive.dto.UserDTO;
+import org.roadmap.filedrive.maper.UserMapper;
+import org.roadmap.filedrive.maper.UserMapperImpl;
+import org.roadmap.filedrive.model.User;
+import org.roadmap.filedrive.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,24 +19,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class AuthorizationController {
 
-    private final AppUserRepository repo;
+    private final UserRepository repo;
 
-    private final AppUserMapper mapper = new AppUserMapperImpl();
+    private final UserMapper mapper = new UserMapperImpl();
 
-    public AuthorizationController(AppUserRepository repo) {
+    public AuthorizationController(UserRepository repo) {
         this.repo = repo;
     }
 
     @GetMapping("/sign-up")
     public String signUp(Model model) {
-        model.addAttribute("userForm", new AppUserDTO());
+        model.addAttribute("userForm", new UserDTO());
         return "sign-up";
     }
 
 
     @GetMapping("/sign-in")
     public String signIn(Model model) {
-        model.addAttribute("userForm", new AppUserDTO());
+        model.addAttribute("userForm", new UserDTO());
         return "sign-in";
     }
 
@@ -46,10 +46,10 @@ public class AuthorizationController {
     }
 
     @PostMapping("/sign-up")
-    public String signUp(@ModelAttribute("userForm") @Valid AppUserDTO userForm,
+    public String signUp(@ModelAttribute("userForm") @Valid UserDTO userForm,
                          BindingResult result, HttpServletRequest request) {
-        AppUser appUser = repo.findByEmail(userForm.getEmail());
-        if (appUser != null) {
+        User user = repo.findByEmail(userForm.getEmail());
+        if (user != null) {
             result.addError(new FieldError("userForm", "email",
                     "Email is already used"));
         }
@@ -64,7 +64,7 @@ public class AuthorizationController {
             var bCryptEncoder = new BCryptPasswordEncoder();
             String encodedPassword = bCryptEncoder.encode(password);
             userForm.setPassword(encodedPassword);
-            AppUser userToSave = mapper.fromDTO(userForm);
+            User userToSave = mapper.fromDTO(userForm);
             repo.save(userToSave);
             request.login(userForm.getEmail(), password);
         } catch (Exception e) {
