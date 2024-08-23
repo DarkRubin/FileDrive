@@ -7,8 +7,6 @@ import org.roadmap.filedrive.maper.AppUserMapper;
 import org.roadmap.filedrive.maper.AppUserMapperImpl;
 import org.roadmap.filedrive.model.AppUser;
 import org.roadmap.filedrive.repository.AppUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,10 +19,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Controller
 public class AuthorizationController {
 
-    @Autowired
-    private AppUserRepository repo;
+    private final AppUserRepository repo;
 
     private final AppUserMapper mapper = new AppUserMapperImpl();
+
+    public AuthorizationController(AppUserRepository repo) {
+        this.repo = repo;
+    }
 
     @GetMapping("/sign-up")
     public String signUp(Model model) {
