@@ -14,7 +14,7 @@ services:
       MYSQL_USER: developer
       MYSQL_PASSWORD: jhg32ifiod2
     networks:
-      - backend
+      - webapp
 
   redis:
     image: redis:7.4.0
@@ -22,7 +22,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - backend
+      - webapp
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -30,7 +30,9 @@ services:
       retries: 5
 
   app:
-    image: file-drive
+    build:
+      context: .
+      dockerfile: Dockerfile
     depends_on:
       redis:
           condition: service_healthy
@@ -40,12 +42,12 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/drive_db
       SPRING_DATASOURCE_USERNAME: developer
       SPRING_DATASOURCE_PASSWORD: jhg32ifiod2
-      SPRING_REDIS_URL: redis://172.18.0.1:6379
+      SPRING_DATA_REDIS_URL: redis://172.18.0.1:6379
     ports:
       - "8080:8080"
     networks:
-      - backend
+      - webapp
 
 networks:
-  backend:
+  webapp:
     driver: bridge
