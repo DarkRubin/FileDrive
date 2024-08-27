@@ -46,8 +46,8 @@ services:
       - webapp
 
   app:
+    container_name: file-drive
     build:
-      context: .
       dockerfile: Dockerfile
     depends_on:
       redis:
