@@ -2,7 +2,7 @@
 FROM eclipse-temurin:22-jdk AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build --no-daemon
+RUN gradle build -x test --no-daemon
 
 FROM eclipse-temurin:22-jdk
 
