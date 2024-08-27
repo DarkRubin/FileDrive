@@ -39,6 +39,9 @@ services:
     environment:
       MINIO_ROOT_USER: root
       MINIO_ROOT_PASSWORD: mg3hg3i8qc
+    command: server /data
+    volumes:
+      - minio-storage:/data
     networks:
       - webapp
 
@@ -64,3 +67,7 @@ services:
 networks:
   webapp:
     driver: bridge
+
+volumes:
+  minio-storage:
+    driver: local
