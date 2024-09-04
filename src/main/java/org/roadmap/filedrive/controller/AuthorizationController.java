@@ -2,6 +2,7 @@ package org.roadmap.filedrive.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.dto.UserDTO;
 import org.roadmap.filedrive.maper.UserMapper;
 import org.roadmap.filedrive.maper.UserMapperImpl;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
+@RequiredArgsConstructor
 public class AuthorizationController {
 
     private final UserRepository repo;
