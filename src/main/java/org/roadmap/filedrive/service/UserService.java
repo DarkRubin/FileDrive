@@ -22,6 +22,7 @@ public class UserService implements UserDetailsService {
         } else {
             return org.springframework.security.core.userdetails.User.withUsername(user.getEmail())
                     .password(user.getPassword())
+                    .authorities(String.format("user-%d-files/", user.getId()))
                     .build();
         }
     }
