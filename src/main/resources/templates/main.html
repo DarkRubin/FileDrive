@@ -1,12 +1,176 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
 	<meta charset="UTF-8">
 	<title>Storage</title>
 	<link rel="stylesheet" href="/static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" href="/static/css/style.css" th:href="@{/css/style.css}">
 </head>
 <body>
-<h1 sec:authorize="isAuthenticated()">Hello <span sec:authentication="name">username</span>!</h1>
-	<h1>Welcome to <span th:text="${appName}"></span> !</h1>
+
+<header th:insert="~{header}"></header>
+
+<nav aria-label="breadcrumb" class="bg-secondary">
+	<ul th:with="folders = ${path.split('/')}">
+		<li th:each="folder, info : ${folders}">
+			<a href="/main" th:href="@{/main}" th:text="${folder}">folder-name</a>
+		</li>
+	</ul>
+</nav>
+
+<div class="row">
+	<div class="col-2">
+
+		<form class="row p-3" action="/search" method="get">
+			<label class="text-secondary form-label col-8">Search
+				<input class="form-control" type="search" name="input">
+			</label>
+			<input type="submit" value="Search" class="btn btn-primary col-4 h-50 align-self-center">
+		</form>
+
+		<form class="p-4" method="post" action="/upload" enctype="multipart/form-data">
+			<div class="drop-zone">
+				<span class="drop-zone__prompt">Drop files here or click to upload</span>
+				<input type="file" name="files" class="drop-zone__input" multiple required>
+			</div>
+			<input type="hidden" th:value="${path}" name="path">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			<input type="submit" class="btn btn-primary" value="Upload Files">
+		</form>
+
+		<form class="p-4" method="post" action="/upload" enctype="multipart/form-data">
+			<div class="drop-zone drop-zone-folder">
+				<span class="drop-zone__prompt">Drop folders here or click to upload</span>
+				<input type="file" name="files" class="drop-zone__input" webkitdirectory required>
+			</div>
+			<input type="hidden" th:value="${path}" name="path">
+			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+			<input type="submit" class="btn btn-primary justify-content-center" value="Upload Folders">
+		</form>
+	</div>
+	<div class="col-9">
+		<div class="container">
+			<div class="row" th:each="fileWithPath, info : ${files}" th:switch="true">
+				<img class="col-1" th:case="${fileWithPath.endsWith('/')}" src="/static/icons/folder.png" th:src="@{/icons/folder.png}"
+				     alt="folder">
+				<img class="col-1" th:case="${fileWithPath.endsWith('.mp4')}" src="/static/icons/video.png" th:src="@{/icons/video.png}"
+				     alt="video">
+				<img class="col-1" th:case="${fileWithPath.endsWith('.jpg') || fileWithPath.endsWith('.png')}" src="/static/icons/picture.png"
+				     th:src="@{/icons/picture.png}" alt="picture">
+				<img class="col-1" th:case="${fileWithPath.endsWith('.txt') || fileWithPath.endsWith('.md')}" src="/static/icons/notes.png"
+				     th:src="@{/icons/notes.png}" alt="text">
+				<img class="col-1" th:case="${fileWithPath.endsWith('.mp3')}" src="/static/icons/music.png" th:src="@{/icons/music.png}"
+				     alt="music">
+				<img class="col-1" th:case="*" src="/static/icons/default.png" th:src="@{/icons/default.png}" alt="default">
+
+				<h3 class="col-8" th:classappend="${fileWithPath.replace(path, '').equals(searched)} ? searched : '' "
+				    th:text="${fileWithPath.replace(path, '')}">file</h3>
+
+				<div class="col-3">
+					<div class="row">
+
+						<form class="col-auto" action="/download" method="get">
+							<input type="hidden" name="filename" th:value="${fileWithPath.replace(path, '')}">
+							<input type="hidden" name="path" th:value="${path}">
+							<input value="Download" type="submit" class="btn btn-primary">
+						</form>
+
+						<button type="button" class="btn btn-danger col-auto" data-bs-toggle="modal" data-bs-target="#deleteModal"
+						        th:data-whatever="${fileWithPath.replace(path, '')}">Delete</button>
+						<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="deleteModalLabel">You sure to delete:</h5>
+										<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+									</div>
+									<div class="modal-footer">
+										<form class="col-auto" action="/delete" method="post">
+											<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+											<div class="modal-body">
+												<input type="hidden" name="fileName" th:value="${fileWithPath.replace(path, '')}">
+											</div>
+											<input type="hidden" name="path" th:value="${path}">
+											<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+											<input value="Delete" type="submit" class="btn btn-danger">
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+
+<!--						<button type="button" class="btn btn-danger col-auto" data-bs-toggle="modal" data-bs-target="#renameModal">Rename</button>-->
+
+						<button type="button" class="btn btn-primary col-auto" data-bs-toggle="modal" data-bs-target="#renameModal"
+						        th:data-whatever="${fileWithPath.replace(path, '')}">Rename</button>
+
+						<div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="renameModalLabel">You sure to rename file</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+											<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<form method="post" action="/rename">
+										<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+										<input type="hidden" name="path" th:value="${path}">
+										<div class="modal-body">
+											<div class="mb-3">
+												<input type="hidden" name="oldName">
+												<label for="recipient-name" class="col-form-label">New name:</label>
+												<input type="text" name="newName" class="form-control" id="recipient-name">
+											</div>
+										</div>
+										<div class="modal-footer">
+											<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+											<button type="submit" class="btn btn-primary">Rename</button>
+										</div>
+									</form>
+								</div>
+							</div>
+						</div>
+
+
+
+					</div>
+				</div>
+				<hr>
+			</div>
+		</div>
+	</div>
+</div>
+
+<h2 class="text-danger" th:if="${error != null}" th:text="error">Error</h2>
+<script th:src="@{/js/bootstrap.min.js}" src="/static/js/bootstrap.min.js"></script>
+<script th:src="@{/js/file-load.js}" src="/static/js/file-load.js"></script>
+
+<script>
+		let deleteModal = document.getElementById('deleteModal')
+    let renameModal = document.getElementById('renameModal')
+
+		deleteModal.addEventListener('show.bs.modal', function (event) {
+				let button = event.relatedTarget
+				let recipient = button.getAttribute('data-whatever')
+
+				let modalTitle = deleteModal.querySelector('.modal-title')
+				let modalBodyInput = deleteModal.querySelector('.modal-body input')
+
+				modalTitle.textContent = 'You sure to delete file: ' + recipient
+				modalBodyInput.value = recipient
+		})
+
+    renameModal.addEventListener('show.bs.modal', function (event) {
+        let button = event.relatedTarget
+        let recipient = button.getAttribute('data-whatever')
+
+        let modalTitle = renameModal.querySelector('.modal-title')
+        let modalBodyInput = renameModal.querySelector('.modal-body input')
+
+        modalTitle.textContent = 'You sure to rename file: ' + recipient
+        modalBodyInput.value = recipient
+    })
+</script>
 </body>
 </html>
