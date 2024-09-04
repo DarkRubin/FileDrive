@@ -19,6 +19,7 @@ services:
   redis:
     image: redis:7.4.0
     container_name: redis
+    restart: always
     ports:
       - "6379:6379"
     networks:
@@ -53,6 +54,8 @@ services:
       redis:
           condition: service_healthy
       db:
+        condition: service_started
+      minio:
         condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/drive_db
