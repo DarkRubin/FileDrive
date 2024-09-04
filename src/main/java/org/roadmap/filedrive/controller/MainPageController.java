@@ -23,4 +23,17 @@ public class MainPageController {
         return "search";
     }
 
+    private String getPath() {
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities()
+                .iterator().next().getAuthority();
+    }
+
+    private boolean isAuthenticated() {
+        return SecurityContextHolder.getContext().getAuthentication()
+                .getAuthorities().stream()
+                .noneMatch(authority -> authority.getAuthority().equals("ROLE_ANONYMOUS"));
+    }
+
+
 }
