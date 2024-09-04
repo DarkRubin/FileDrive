@@ -25,9 +25,6 @@ public class AuthorizationController {
 
     private final UserMapper mapper = new UserMapperImpl();
 
-    public AuthorizationController(UserRepository repo) {
-        this.repo = repo;
-    }
 
     @GetMapping("/sign-up")
     public String signUp(Model model) {
