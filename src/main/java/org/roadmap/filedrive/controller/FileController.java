@@ -46,6 +46,19 @@ public class FileController {
         return new ResponseEntity<>(resourceStream, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/download/folder")
+    public ResponseEntity<byte[]> sendFolder(@RequestParam("filename") String folder, @RequestParam(defaultValue = "") String path)
+            throws IOException {
+        var byteOutStream = service.getFolder(folder, path);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/octet-stream"));
+        String resultZipName = folder.substring(0, folder.lastIndexOf('/')) + ".zip";
+        ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
+                .filename(resultZipName, StandardCharsets.UTF_8).build();
+        headers.setContentDisposition(contentDisposition);
+        return new ResponseEntity<>(byteOutStream.toByteArray(), headers, HttpStatus.OK);
+    }
+
     @PostMapping("/upload")
     public String uploadFiles(@RequestParam("files") List<MultipartFile> files,
                               @RequestParam(defaultValue = "") String path, Model model) throws IOException {
