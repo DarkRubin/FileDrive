@@ -10,12 +10,13 @@
 
 <header th:insert="~{header}"></header>
 
-<nav aria-label="breadcrumb" class="bg-secondary">
-	<ul th:with="folders = ${path.split('/')}">
-		<li th:each="folder, info : ${folders}">
-			<a href="/main" th:href="@{/main}" th:text="${folder}">folder-name</a>
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+		<li th:each="breadcrumb, info : ${breadcrumbs}" class="breadcrumb-item" th:classappend="${info.last} ? active : ''">
+			<a class="disabled" th:if="${info.last}" href="" th:text="${breadcrumb.getFolder()}" disabled="true">folder-name</a>
+			<a th:unless="${info.last}" th:href="@{/main(path=${breadcrumb.getPath()}+'/')}" th:text="${breadcrumb.getFolder()}"></a>
 		</li>
-	</ul>
+	</ol>
 </nav>
 
 <div class="row">
