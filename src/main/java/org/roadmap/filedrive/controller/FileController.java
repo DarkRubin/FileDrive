@@ -89,5 +89,14 @@ public class FileController {
         return "redirect:/";
     }
 
+    @PostMapping("/new-folder")
+    public String newFolder(@RequestParam String name, @RequestParam String path, Model model)
+            throws IOException, MinioUnknownException {
+        String fullName = path + name + "/";
+        service.put(fullName, 0, new ByteArrayInputStream(new byte[0]));
+        model.addAttribute("path", path);
+        return "redirect:/";
+    }
+
 
 }
