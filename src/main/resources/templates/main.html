@@ -61,9 +61,13 @@
 			<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 			<input type="submit" class="btn btn-primary justify-content-center" value="Upload Folders">
 		</form>
+
 	</div>
+
+
 	<div class="col-9">
 		<div class="container">
+			<h1 class="text-center" th:if="${files.isEmpty()}">Folder is empty!</h1>
 			<div class="row" th:each="fileWithPath, info : ${files}" th:switch="true">
 				<img class="col-1" th:case="${fileWithPath.endsWith('/')}" src="/static/icons/folder.png" th:src="@{/icons/folder.png}"
 				     alt="folder">
@@ -77,13 +81,24 @@
 				     alt="music">
 				<img class="col-1" th:case="*" src="/static/icons/default.png" th:src="@{/icons/default.png}" alt="default">
 
-				<h3 class="col-8" th:classappend="${fileWithPath.replace(path, '').equals(searched)} ? searched : '' "
+				<h3 class="col-8" th:if="${fileWithPath.endsWith('/')}"
+				    th:classappend="${fileWithPath.replace(path, '').equals(searched)} ? searched : '' ">
+					<a th:href="@{/main(path=${fileWithPath})}" th:text="${fileWithPath.replace(path, '')}"></a>
+				</h3>
+
+				<h3 class="col-8" th:unless="${fileWithPath.endsWith('/')}"
+				    th:classappend="${fileWithPath.replace(path, '').equals(searched)} ? searched : '' "
 				    th:text="${fileWithPath.replace(path, '')}">file</h3>
 
 				<div class="col-3">
 					<div class="row">
 
-						<form class="col-auto" action="/download" method="get">
+						<form class="col-auto" action="/download/folder" th:if="${fileWithPath.endsWith('/')}" method="get">
+							<input type="hidden" name="filename" th:value="${fileWithPath.replace(path, '')}">
+							<input type="hidden" name="path" th:value="${path}">
+							<input value="Download" type="submit" class="btn btn-primary">
+						</form>
+						<form class="col-auto" action="/download" th:unless="${fileWithPath.endsWith('/')}" method="get">
 							<input type="hidden" name="filename" th:value="${fileWithPath.replace(path, '')}">
 							<input type="hidden" name="path" th:value="${path}">
 							<input value="Download" type="submit" class="btn btn-primary">
@@ -113,7 +128,6 @@
 							</div>
 						</div>
 
-<!--						<button type="button" class="btn btn-danger col-auto" data-bs-toggle="modal" data-bs-target="#renameModal">Rename</button>-->
 
 						<button type="button" class="btn btn-primary col-auto" data-bs-toggle="modal" data-bs-target="#renameModal"
 						        th:data-whatever="${fileWithPath.replace(path, '')}">Rename</button>
