@@ -79,4 +79,28 @@ public class FileService {
 
         return result;
     }
+
+    public ByteArrayOutputStream getFolder(String folder, String path) throws IOException {
+        String fullName = path + folder;
+        var baos = new ByteArrayOutputStream();
+        var zos = new ZipOutputStream(baos);
+        List<String> allFiles = new ArrayList<>();
+        Queue<String> queue = new LinkedList<>(getAllFileNames(fullName));
+        while (!queue.isEmpty()) {
+            String fileName = queue.poll();
+            if (fileName.endsWith("/")) {
+                queue.addAll(getAllFileNames(fileName));
+            }
+            allFiles.add(fileName);
+        }
+        for (String fileNameWithPath : allFiles) {
+            String fileName = fileNameWithPath.replace(path, "");
+            ZipEntry zipEntry = new ZipEntry(fileName);
+            zos.putNextEntry(zipEntry);
+            zos.write(get(fileNameWithPath).getContentAsByteArray());
+            zos.closeEntry();
+        }
+        zos.close();
+        return baos;
+    }
 }
