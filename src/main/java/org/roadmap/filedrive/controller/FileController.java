@@ -32,20 +32,18 @@ public class FileController {
     @GetMapping("/download")
     public ResponseEntity<Resource> send(@RequestParam("filename") String fileName, @RequestParam(defaultValue = "") String path) {
         String fullName = path + fileName;
-        byte[] bytes;
+        InputStreamResource resourceStream;
         try {
-            bytes = service.get(fullName);
-        } catch (MinioUnknownException e) {
+            resourceStream = service.get(fullName);
+        } catch (MinioUnknownException | IOException e) {
             return ResponseEntity.notFound().build();
         }
-        var byteStream = new ByteArrayInputStream(bytes);
-        var fileStream = new InputStreamResource(byteStream);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/octet-stream"));
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
                 .filename(fileName, StandardCharsets.UTF_8).build();
         headers.setContentDisposition(contentDisposition);
-        return new ResponseEntity<>(fileStream, headers, HttpStatus.OK);
+        return new ResponseEntity<>(resourceStream, headers, HttpStatus.OK);
     }
 
     @PostMapping("/upload")
