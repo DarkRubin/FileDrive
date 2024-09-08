@@ -7,6 +7,7 @@ import io.minio.Result;
 import io.minio.errors.MinioException;
 import io.minio.messages.DeleteObject;
 import io.minio.messages.Item;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.exception.MinioUnknownException;
 import org.springframework.stereotype.Repository;
@@ -22,8 +23,14 @@ import java.util.List;
 public class MinioFolderRepository {
 
     private final MinioClientBuilder builder;
-    private final MinioClient client = builder.buildMinioClient();
-    private final String bucket = builder.getDefaultBucket();
+    private MinioClient client;
+    private String bucket;
+
+    @PostConstruct
+    private void initialize() {
+        client = builder.buildMinioClient();
+        bucket = builder.getDefaultBucket();
+    }
 
     public Iterable<Result<Item>> getAllContentNames(String path) throws MinioUnknownException {
         return client.listObjects(ListObjectsArgs.builder()
