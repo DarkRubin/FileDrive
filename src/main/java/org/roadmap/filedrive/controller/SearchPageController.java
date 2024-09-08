@@ -14,8 +14,11 @@ public class SearchPageController {
 
     private final FileService service;
 
+    private final PathAccessHandler handler = new PathAccessHandler();
+
     @GetMapping("/search")
     public String searchPage(@RequestParam String input, @RequestParam String path, Model model) {
+        path = handler.validatePath(path);
         model.addAttribute("searchInput", input);
         try {
             model.addAttribute("result", service.search(input, path));

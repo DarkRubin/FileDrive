@@ -2,7 +2,6 @@ package org.roadmap.filedrive.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.dto.Breadcrumb;
-import org.roadmap.filedrive.exception.MinioUnknownException;
 import org.roadmap.filedrive.service.FileService;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -20,20 +19,15 @@ public class MainPageController {
 
     private final FileService service;
 
+    private final PathAccessHandler handler = new PathAccessHandler();
+
     @GetMapping({"/", "/main"})
     public String mainPage(Model model, @RequestParam(defaultValue = "") String path) {
+        path = handler.validatePath(path);
         if (!isAuthenticated()) {
             return "main-not-auth";
         }
-        if (path == null || path.isEmpty()) {
-            path = getPath();
-        }
-
-        try {
-            model.addAttribute("files", service.getAllFileNames(path));
-        } catch (MinioUnknownException e) {
-            model.addAttribute("error", "Unknown");
-        }
+        model.addAttribute("files", service.getAllFileNames(path));
         model.addAttribute("path", path);
         addBreadcrumbs(model, path);
         return "main";
@@ -46,21 +40,11 @@ public class MainPageController {
         String fileName = splitPath [last];
         splitPath [last] = "";
         String path = String.join("/", splitPath);
-        try {
-            model.addAttribute("files", service.getAllFileNames(path));
-        } catch (MinioUnknownException e) {
-            model.addAttribute("error", "Unknown");
-        }
+        model.addAttribute("files", service.getAllFileNames(path));
         model.addAttribute("path", path);
         addBreadcrumbs(model, path);
         model.addAttribute("searched", fileName);
         return "main";
-    }
-
-    private String getPath() {
-        return SecurityContextHolder.getContext().getAuthentication()
-                .getAuthorities()
-                .iterator().next().getAuthority();
     }
 
     private boolean isAuthenticated() {
