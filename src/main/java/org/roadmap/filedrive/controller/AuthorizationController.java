@@ -49,8 +49,7 @@ public class AuthorizationController {
                          BindingResult result, HttpServletRequest request) {
         User user = repo.findByEmail(userForm.getEmail());
         if (user != null) {
-            result.addError(new FieldError("userForm", "email",
-                    "Email is already used"));
+            addErrorToEmail(result, "Email is already used");
         }
         String password = userForm.getPassword();
         validate(password, result);
@@ -67,8 +66,7 @@ public class AuthorizationController {
             repo.save(userToSave);
             request.login(userForm.getEmail(), password);
         } catch (Exception e) {
-            result.addError(new FieldError("userForm", "email",
-                    "Unknown error occurred"));
+            addErrorToEmail(result, "Unknown error occurred");
             return "sign-up";
         }
 
@@ -77,11 +75,9 @@ public class AuthorizationController {
 
     private void validate(String password, BindingResult result) {
         if (password.length() < 8) {
-            result.addError(new FieldError("userForm", "password",
-                    "Minimum password length 8 characters"));
+            addErrorToPassword(result, "Minimum password length 8 characters");
             return;
         }
-
         int lettersCount = 0;
         int numbersCount = 0;
         int specialSymbolsCount = 0;
@@ -95,16 +91,21 @@ public class AuthorizationController {
             }
         }
         if (lettersCount == 0) {
-            result.addError(new FieldError("userForm", "password",
-                    "Password must contain at least one letter"));
+            addErrorToPassword(result, "Password must contain at least one letter");
         }
         if (numbersCount == 0) {
-            result.addError(new FieldError("userForm", "password",
-                    "Password must contain at least one number"));
+            addErrorToPassword(result, "Password must contain at least one number");
         }
         if (specialSymbolsCount == 0) {
-            result.addError(new FieldError("userForm", "password",
-                    "Password must contain at least one special symbol"));
+            addErrorToPassword(result, "Password must contain at least one special symbol");
         }
+    }
+
+    private void addErrorToPassword(BindingResult result, String message) {
+        result.addError(new FieldError("userForm", "password", message));
+    }
+
+    private void addErrorToEmail(BindingResult result, String message) {
+        result.addError(new FieldError("userForm", "email", message));
     }
 }
