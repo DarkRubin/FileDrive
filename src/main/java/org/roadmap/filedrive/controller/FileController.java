@@ -28,9 +28,12 @@ public class FileController {
 
     private final FileService service;
 
+    private final PathAccessHandler handler = new PathAccessHandler();
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> send(@RequestParam("filename") String fileName, @RequestParam(defaultValue = "") String path) {
+    public ResponseEntity<Resource> send(@RequestParam("filename") String fileName, @RequestParam(defaultValue = "") String path)
+            throws IOException {
+        path = handler.validatePath(path);
         String fullName = path + fileName;
         InputStreamResource resourceStream;
         try {
@@ -49,6 +52,7 @@ public class FileController {
     @GetMapping("/download/folder")
     public ResponseEntity<byte[]> sendFolder(@RequestParam("filename") String folder, @RequestParam(defaultValue = "") String path)
             throws IOException {
+        path = handler.validatePath(path);
         var byteOutStream = service.getFolder(folder, path);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/octet-stream"));
@@ -62,6 +66,7 @@ public class FileController {
     @PostMapping("/upload")
     public String uploadFiles(@RequestParam("files") List<MultipartFile> files,
                               @RequestParam(defaultValue = "") String path, Model model) throws IOException {
+        path = handler.validatePath(path);
         for (MultipartFile file : files) {
             String fullName = path + file.getOriginalFilename();
             try {
@@ -77,6 +82,7 @@ public class FileController {
     @PostMapping("/rename")
     public String rename(@RequestParam String oldName, @RequestParam String newName,
                          @RequestParam(defaultValue = "") String path, Model model) throws IOException {
+        path = handler.validatePath(path);
         String fullOldName = path + oldName;
         String fullNewName = path + newName;
         try {
@@ -90,6 +96,7 @@ public class FileController {
 
     @PostMapping("/delete")
     public String delete(@RequestParam("fileName") String fileName, @RequestParam String path, Model model) throws IOException {
+        path = handler.validatePath(path);
         String fullName = path + fileName;
         try {
             service.delete(fullName);
@@ -103,11 +110,10 @@ public class FileController {
     @PostMapping("/new-folder")
     public String newFolder(@RequestParam String name, @RequestParam String path, Model model)
             throws IOException, MinioUnknownException {
+        path = handler.validatePath(path);
         String fullName = path + name + "/";
         service.put(fullName, 0, new ByteArrayInputStream(new byte[0]));
         model.addAttribute("path", path);
         return "redirect:/";
     }
-
-
 }
