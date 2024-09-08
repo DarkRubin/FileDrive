@@ -36,11 +36,7 @@ public class FileController {
         path = handler.validatePath(path);
         String fullName = path + fileName;
         InputStreamResource resourceStream;
-        try {
-            resourceStream = service.get(fullName);
-        } catch (MinioUnknownException | IOException e) {
-            return ResponseEntity.notFound().build();
-        }
+        resourceStream = service.get(fullName);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType("application/octet-stream"));
         ContentDisposition contentDisposition = ContentDisposition.builder("attachment")
@@ -69,11 +65,7 @@ public class FileController {
         path = handler.validatePath(path);
         for (MultipartFile file : files) {
             String fullName = path + file.getOriginalFilename();
-            try {
-                service.put(fullName, file.getSize(), file.getInputStream());
-            } catch (MinioUnknownException e) {
-                model.addAttribute("error", e.getMessage());
-            }
+            service.put(fullName, file.getSize(), file.getInputStream());
         }
         model.addAttribute("path", path);
         return "redirect:/";
@@ -85,11 +77,7 @@ public class FileController {
         path = handler.validatePath(path);
         String fullOldName = path + oldName;
         String fullNewName = path + newName;
-        try {
-            service.rename(fullOldName, fullNewName);
-        } catch (MinioUnknownException e) {
-            model.addAttribute("error", e.getMessage());
-        }
+        service.rename(fullOldName, fullNewName);
         model.addAttribute("path", path);
         return "redirect:/";
     }
@@ -98,11 +86,7 @@ public class FileController {
     public String delete(@RequestParam("fileName") String fileName, @RequestParam String path, Model model) throws IOException {
         path = handler.validatePath(path);
         String fullName = path + fileName;
-        try {
-            service.delete(fullName);
-        } catch (MinioUnknownException e) {
-            model.addAttribute("error", e.getMessage());
-        }
+        service.delete(fullName);
         model.addAttribute("path", path);
         return "redirect:/";
     }
