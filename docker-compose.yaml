@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
 
   db:
@@ -14,38 +12,63 @@ services:
       MYSQL_USER: developer
       MYSQL_PASSWORD: jhg32ifiod2
     networks:
-      - backend
+      - webapp
 
   redis:
     image: redis:7.4.0
     container_name: redis
+    restart: always
     ports:
       - "6379:6379"
     networks:
-      - backend
+      - webapp
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  minio:
+    image: minio/minio:RELEASE.2024-08-29T01-40-52Z
+    container_name: minio
+    ports:
+      - '9002:9000'
+      - '9000:9001'
+    restart: always
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: mg3hg3i8qc
+    command: server /data
+    volumes:
+      - minio-storage:/data
+    networks:
+      - webapp
+
   app:
-    image: file-drive
+    container_name: file-drive
+    build:
+      dockerfile: Dockerfile
     depends_on:
       redis:
           condition: service_healthy
       db:
         condition: service_started
+      minio:
+        condition: service_started
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/drive_db
       SPRING_DATASOURCE_USERNAME: developer
       SPRING_DATASOURCE_PASSWORD: jhg32ifiod2
-      SPRING_REDIS_URL: redis://172.18.0.1:6379
+      SPRING_DATA_REDIS_URL: redis://172.18.0.1:6379
     ports:
       - "8080:8080"
     networks:
-      - backend
+      - webapp
 
 networks:
-  backend:
+  webapp:
     driver: bridge
+
+volumes:
+  minio-storage:
+    driver: local

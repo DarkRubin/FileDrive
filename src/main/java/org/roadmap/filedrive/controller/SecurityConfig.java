@@ -7,7 +7,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -16,25 +15,17 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                new AntPathRequestMatcher("/"),
-                                new AntPathRequestMatcher("/sign-in/**"),
-                                new AntPathRequestMatcher("/sign-up"),
-                                new AntPathRequestMatcher("/log-out"),
-                                new AntPathRequestMatcher("/static/**"),
-                                new AntPathRequestMatcher("/css/**")
-                        ).permitAll()
-                        .requestMatchers("/search")
-                        .hasRole("USER")
-                        .anyRequest().authenticated()
-                ).formLogin(form -> form
-                        .loginPage("/sign-in")
-                        .loginProcessingUrl("/sign-in/auth")
-                        .usernameParameter("email")
+                .requestMatchers(
+                        "/", "/sign-in", "/sign-up", "/logout", "/static/**", "/css/**"
+                ).permitAll()
+                .anyRequest().authenticated()
+        ).formLogin(form -> form
+                .loginPage("/sign-in")
+                .usernameParameter("email")
         ).logout(logout -> logout
-                        .logoutUrl("/log-out")
-                        .logoutSuccessUrl("/")
-                ).build();
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+        ).build();
     }
 
     @Bean

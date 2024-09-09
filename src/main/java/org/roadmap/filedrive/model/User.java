@@ -15,7 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "users")
-public class AppUser {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,4 +27,9 @@ public class AppUser {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    public User(String email, String password) {
+        this.email = email;
+        this.password = password;
+    }
 }
