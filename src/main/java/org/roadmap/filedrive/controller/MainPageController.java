@@ -3,6 +3,7 @@ package org.roadmap.filedrive.controller;
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.dto.Breadcrumb;
 import org.roadmap.filedrive.service.FileService;
+import org.roadmap.filedrive.utils.PathAccessHandler;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

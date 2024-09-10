@@ -3,6 +3,7 @@ package org.roadmap.filedrive.controller;
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.exception.MinioUnknownException;
 import org.roadmap.filedrive.service.FileService;
+import org.roadmap.filedrive.utils.PathAccessHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

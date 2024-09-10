@@ -3,6 +3,7 @@ package org.roadmap.filedrive.controller;
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.exception.MinioUnknownException;
 import org.roadmap.filedrive.service.FileService;
+import org.roadmap.filedrive.utils.PathAccessHandler;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ContentDisposition;
@@ -92,10 +93,10 @@ public class FileController {
     }
 
     @PostMapping("/new-folder")
-    public String newFolder(@RequestParam String name, @RequestParam String path, Model model)
+    public String newFolder(@RequestParam String folderName, @RequestParam String path, Model model)
             throws IOException, MinioUnknownException {
         path = handler.validatePath(path);
-        String fullName = path + name + "/";
+        String fullName = path + folderName + "/";
         service.put(fullName, 0, new ByteArrayInputStream(new byte[0]));
         model.addAttribute("path", path);
         return "redirect:/";
