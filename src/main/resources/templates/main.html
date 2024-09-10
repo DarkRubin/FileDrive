@@ -8,7 +8,7 @@
 </head>
 <body>
 
-<header th:insert="~{header}"></header>
+<header th:insert="~{header (auth=true)}"></header>
 
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
@@ -155,7 +155,7 @@
 						</div>
 
 
-						<button type="button" class="btn btn-primary col-auto" data-bs-toggle="modal" data-bs-target="#renameModal"
+						<button style="margin-left: 10px" type="button" class="btn btn-primary col-auto" data-bs-toggle="modal" data-bs-target="#renameModal"
 						        th:data-whatever="${fileWithPath.replace(path, '')}">Rename</button>
 
 						<div class="modal fade" id="renameModal" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
