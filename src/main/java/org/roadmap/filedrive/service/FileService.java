@@ -1,7 +1,5 @@
 package org.roadmap.filedrive.service;
 
-import io.minio.Result;
-import io.minio.messages.Item;
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.exception.MinioUnknownException;
 import org.roadmap.filedrive.repository.MinioFileRepository;
@@ -14,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -31,18 +28,15 @@ public class FileService {
 
     public List<String> getAllFileNames(String folder) throws MinioUnknownException {
         ArrayList<String> result = new ArrayList<>();
-        Iterator<Result<Item>> iterator = folderRepository.getAllContentNames(folder).iterator();
-        if (iterator.hasNext()) {
-            iterator.next();
-        }
-        while (iterator.hasNext()) {
-            Result<Item> files = iterator.next();
+        folderRepository.getAllContentNames(folder).forEach(itemResult -> {
             try {
-                result.add(files.get().objectName());
+                if (!itemResult.get().objectName().equals(folder)) {
+                    result.add(itemResult.get().objectName());
+                }
             } catch (Exception e) {
                 throw new MinioUnknownException(e);
             }
-        }
+        });
         return result.reversed();
     }
 
