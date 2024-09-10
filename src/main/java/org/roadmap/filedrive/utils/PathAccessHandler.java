@@ -1,4 +1,4 @@
-package org.roadmap.filedrive.controller;
+package org.roadmap.filedrive.utils;
 
 import org.roadmap.filedrive.exception.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
