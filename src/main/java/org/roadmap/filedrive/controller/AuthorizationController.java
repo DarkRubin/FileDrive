@@ -47,7 +47,7 @@ public class AuthorizationController {
     @PostMapping("/sign-up")
     public String signUp(@ModelAttribute("userForm") @Valid UserDTO userForm,
                          BindingResult result, HttpServletRequest request) {
-        User user = repo.findByEmail(userForm.getEmail());
+        User user = repo.getByEmail(userForm.getEmail());
         if (user != null) {
             addErrorToEmail(result, "Email is already used");
         }

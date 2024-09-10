@@ -40,7 +40,7 @@ class AuthorizationControllerIT {
         this.mockMvc.perform(requestBuilder)
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/main"));
-        User result = userRepository.findByEmail(EMAIL);
+        User result = userRepository.getByEmail(EMAIL);
         assertNotNull(result);
 
     }
