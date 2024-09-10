@@ -1,4 +1,4 @@
-package org.roadmap.filedrive.controller;
+package org.roadmap.filedrive.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
