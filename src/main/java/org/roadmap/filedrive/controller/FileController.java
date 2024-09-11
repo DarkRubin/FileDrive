@@ -1,7 +1,6 @@
 package org.roadmap.filedrive.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.roadmap.filedrive.exception.MinioUnknownException;
 import org.roadmap.filedrive.service.FileService;
 import org.roadmap.filedrive.utils.PathAccessHandler;
 import org.springframework.core.io.InputStreamResource;
@@ -32,8 +31,7 @@ public class FileController {
     private final PathAccessHandler handler = new PathAccessHandler();
 
     @GetMapping("/download")
-    public ResponseEntity<Resource> send(@RequestParam("filename") String fileName, @RequestParam(defaultValue = "") String path)
-            throws IOException {
+    public ResponseEntity<Resource> send(@RequestParam("filename") String fileName, @RequestParam(defaultValue = "") String path) {
         path = handler.validatePath(path);
         String fullName = path + fileName;
         InputStreamResource resourceStream;
@@ -74,7 +72,7 @@ public class FileController {
 
     @PostMapping("/rename")
     public String rename(@RequestParam String oldName, @RequestParam String newName,
-                         @RequestParam(defaultValue = "") String path, Model model) throws IOException {
+                         @RequestParam(defaultValue = "") String path, Model model) {
         path = handler.validatePath(path);
         String fullOldName = path + oldName;
         String fullNewName = path + newName;
@@ -84,7 +82,7 @@ public class FileController {
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam("fileName") String fileName, @RequestParam String path, Model model) throws IOException {
+    public String delete(@RequestParam("fileName") String fileName, @RequestParam String path, Model model) {
         path = handler.validatePath(path);
         String fullName = path + fileName;
         service.delete(fullName);
@@ -93,8 +91,7 @@ public class FileController {
     }
 
     @PostMapping("/new-folder")
-    public String newFolder(@RequestParam String folderName, @RequestParam String path, Model model)
-            throws IOException, MinioUnknownException {
+    public String newFolder(@RequestParam String folderName, @RequestParam String path, Model model) {
         path = handler.validatePath(path);
         String fullName = path + folderName + "/";
         service.put(fullName, 0, new ByteArrayInputStream(new byte[0]));
