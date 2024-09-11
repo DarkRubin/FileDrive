@@ -17,7 +17,7 @@ public class UserDTO {
 
     @NotNull
     @NotEmpty
-    @Email
+    @Email(regexp = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")
     private String email;
 
     @NotNull
