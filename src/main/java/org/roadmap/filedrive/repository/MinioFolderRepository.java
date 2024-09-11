@@ -43,8 +43,7 @@ public class MinioFolderRepository {
             String fileName = queue.poll();
             if (fileName.endsWith("/")) {
                 queue.addAll(listEntriesName(fileName));
-            }
-            result.add(fileName);
+            } else result.add(fileName);
         }
         return result;
     }
