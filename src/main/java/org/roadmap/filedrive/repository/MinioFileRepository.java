@@ -9,6 +9,7 @@ import io.minio.errors.MinioException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.exception.MinioUnknownException;
+import org.roadmap.filedrive.utils.MinioProperties;
 import org.springframework.stereotype.Repository;
 
 import java.io.ByteArrayInputStream;
@@ -22,13 +23,14 @@ import java.security.NoSuchAlgorithmException;
 public class MinioFileRepository {
 
     private final MinioClientBuilder builder;
+    private final MinioProperties properties;
     private MinioClient client;
     private String bucket;
 
     @PostConstruct
     private void initialize() {
         client = builder.buildMinioClient();
-        bucket = builder.getDefaultBucket();
+        bucket = properties.getDefaultBucket();
     }
 
     public void put(String nameWithPath, long size, InputStream stream) throws IOException, MinioUnknownException {

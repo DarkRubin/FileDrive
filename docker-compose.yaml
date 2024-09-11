@@ -64,7 +64,7 @@ services:
       SPRING_DATASOURCE_USERNAME: developer
       SPRING_DATASOURCE_PASSWORD: jhg32ifiod2
       SPRING_DATA_REDIS_URL: redis://172.18.0.1:6379
-      MINIO_ENDPOINT: http://172.31.0.4:9000
+      MINIO_ENDPOINT: http://172.19.0.2:9000
     ports:
       - "8080:8080"
     networks:

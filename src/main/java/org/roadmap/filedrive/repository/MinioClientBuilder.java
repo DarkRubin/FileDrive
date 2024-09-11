@@ -3,40 +3,31 @@ package org.roadmap.filedrive.repository;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
-import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.exception.MinioUnknownException;
-import org.springframework.beans.factory.annotation.Value;
+import org.roadmap.filedrive.utils.MinioProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
-@Configuration
+@RequiredArgsConstructor
+@Component
 public class MinioClientBuilder {
 
-    @Value("${minio.default.bucket}")
-    @Getter
-    private String defaultBucket;
-
-    @Value("${minio.endpoint}")
-    private String endpoint;
-
-    @Value("${minio.access-key}")
-    private String accessKey;
-
-    @Value("${minio.secret-key}")
-    private String secretKey;
-
+    private final MinioProperties properties;
 
     @Bean
     public MinioClient buildMinioClient() throws MinioUnknownException {
-        var minioClient = MinioClient.builder().endpoint(endpoint).credentials(accessKey, secretKey).build();
+        var minioClient = MinioClient.builder()
+                .endpoint(properties.getEndpoint())
+                .credentials(properties.getAccessKey(), properties.getSecretKey()).build();
         createDefaultBucketIfNotExist(minioClient);
         return minioClient;
     }
 
     private void createDefaultBucketIfNotExist(MinioClient minioClient) throws MinioUnknownException {
         try {
-            if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(defaultBucket).build())) {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(defaultBucket).build());
+            if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket(properties.getDefaultBucket()).build())) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(properties.getDefaultBucket()).build());
             }
         } catch (Exception e) {
             throw new MinioUnknownException(e);

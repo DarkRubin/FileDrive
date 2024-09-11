@@ -10,6 +10,7 @@ import io.minio.messages.Item;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.roadmap.filedrive.exception.MinioUnknownException;
+import org.roadmap.filedrive.utils.MinioProperties;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -23,13 +24,14 @@ import java.util.List;
 public class MinioFolderRepository {
 
     private final MinioClientBuilder builder;
+    private final MinioProperties properties;
     private MinioClient client;
     private String bucket;
 
     @PostConstruct
     private void initialize() {
         client = builder.buildMinioClient();
-        bucket = builder.getDefaultBucket();
+        bucket = properties.getDefaultBucket();
     }
 
     public Iterable<Result<Item>> getAllContentNames(String path) throws MinioUnknownException {
