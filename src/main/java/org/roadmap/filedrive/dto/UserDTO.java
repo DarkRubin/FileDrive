@@ -18,10 +18,10 @@ public class UserDTO {
     @NotNull
     @NotEmpty
     @Email
-    String email;
+    private String email;
 
     @NotNull
     @NotEmpty
-    String password;
+    private String password;
 
 }
