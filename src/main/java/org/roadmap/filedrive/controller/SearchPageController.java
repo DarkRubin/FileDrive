@@ -26,6 +26,7 @@ public class SearchPageController {
         } catch (MinioUnknownException e) {
             model.addAttribute("error", e.getMessage());
         }
+        model.addAttribute("path", path);
         return "search";
     }
 }
