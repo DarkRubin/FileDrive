@@ -46,7 +46,7 @@ public class MinioFileRepository {
         }
     }
 
-    public GetObjectResponse get(String nameWithPath) throws MinioUnknownException {
+    public InputStream get(String nameWithPath) throws MinioUnknownException {
         try {
             return client.getObject(GetObjectArgs.builder()
                     .bucket(bucket)

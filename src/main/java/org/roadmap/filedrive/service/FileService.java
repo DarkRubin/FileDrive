@@ -60,11 +60,12 @@ public class FileService {
         String fullName = path + folder;
         var baos = new ByteArrayOutputStream();
         var zos = new ZipOutputStream(baos);
-        for (String fileNameWithPath : folderRepository.listEntriesNameWithNested(fullName)) {
+        List<String> names = folderRepository.listEntriesNameWithNested(fullName);
+        for (String fileNameWithPath : names) {
             String fileName = fileNameWithPath.replace(path, "");
             ZipEntry zipEntry = new ZipEntry(fileName);
             zos.putNextEntry(zipEntry);
-            zos.write(get(fileNameWithPath).getContentAsByteArray());
+            zos.write(fileRepository.get(fileNameWithPath).readAllBytes());
             zos.closeEntry();
         }
         zos.close();
