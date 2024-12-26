@@ -4,9 +4,8 @@
 ![redis](https://img.shields.io/badge/redis-%23DD0031.svg?&style=for-the-badge&logo=redis&logoColor=white)
 ![mysql](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 ![spring](https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white)
-## Six project in roadmap: https://zhukovsd.github.io/java-backend-learning-course/
+
 ## Stack: Java, Gradle, Docker, Minio, MySql, Redis, Spring Boot, Spring Security, Spring Sessions, Spring Data JPA
-## Deploy: http://31.131.26.142:8080/
 ## Main page
  ![screen1](https://github.com/user-attachments/assets/0e846bc3-e46a-4ede-8565-eee32f855a2b)
 ## Sign-in
